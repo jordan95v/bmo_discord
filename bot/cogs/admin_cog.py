@@ -32,7 +32,7 @@ class AdminCog(commands.Cog):
             await ctx.send(embed=message)
             return
 
-        messages = await ctx.channel.purge(limit=number + 1)
+        messages: list[discord.Message] = await ctx.channel.purge(limit=number + 1)
         message = EmbedCreator.create_embed(
             name=f"Delete",
             value=f"Deleted **{len(messages)- 1}** message{'s' if len(messages) > 2 else ''} !",
@@ -91,8 +91,8 @@ class AdminCog(commands.Cog):
 
         banned_users: list[discord.guild.BanEntry] = await ctx.guild.bans()
         message: discord.Embed
-        try:
 
+        try:
             user_name, user_discriminator = member.split("#")
         except ValueError:
             message = EmbedCreator.create_embed(

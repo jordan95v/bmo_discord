@@ -28,12 +28,14 @@ class EventCog(commands.Cog):
         await ctx.message.delete()
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error) -> None:
+    async def on_command_error(
+        self, ctx: commands.Context, error: commands.CommandError
+    ) -> None:
         """Happens when an error occur.
 
         Args:
             ctx (commands.Context): The context.
-            errors (...): The error.
+            errors (commands.CommandError): The error.
         """
 
         message: discord.Embed

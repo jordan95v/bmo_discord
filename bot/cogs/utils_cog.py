@@ -64,9 +64,9 @@ class UtilsCog(commands.Cog):
             ctx (commands.Context): The context.
             choices (list[str]): The list of choices.
         """
-
+        message: discord.Embed
         try:
-            message: discord.Embed = EmbedCreator.create_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Choices between : {', '.join(choices)}",
                 value=f"{ctx.author.mention} The **choice** is: "
                 f"**{random.choice(choices)}**",
@@ -76,7 +76,8 @@ class UtilsCog(commands.Cog):
                 name=f"No arguments",
                 value=f"You need to give arguments so i can choose !",
             )
-        await ctx.send(embed=message)
+        finally:
+            await ctx.send(embed=message)
 
     @commands.command(name="ask")
     async def ask(self, ctx: commands.Context, *, question) -> None:

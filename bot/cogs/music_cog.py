@@ -106,7 +106,9 @@ class MusicCog(commands.Cog):
             )
         else:
             if source_url:
-                source = await discord.FFmpegOpusAudio.from_probe(source_url)
+                source: discord.FFmpegOpusAudio = (
+                    await discord.FFmpegOpusAudio.from_probe(source_url)
+                )
                 ctx.voice_client.play(source)
 
                 message = EmbedCreator.create_embed(
