@@ -116,9 +116,9 @@ class MusicCog(commands.Cog):
         """
         try:
             if arg.startswith("http"):
-                return await self.from_url(ctx, arg=arg)
+                return await self.from_url(arg)
             else:
-                return await self.from_str(ctx, arg=arg)
+                return await self.from_str(ctx, arg)
 
         except youtube_dl.DownloadError:
             message = EmbedCreator.create_embed(
@@ -128,7 +128,7 @@ class MusicCog(commands.Cog):
             await ctx.send(embed=message)
             return dict()
 
-    async def from_url(self, ctx: commands.Context, *, arg: str):
+    async def from_url(self, arg: str):
         """Search Youtube for an url.
 
         Args:
@@ -141,7 +141,7 @@ class MusicCog(commands.Cog):
         res: Any = self.ytdl.extract_info(arg, download=False)
         return dict(source=res.get("formats")[0].get("url"), title=res.get("title"))
 
-    async def from_str(self, ctx: commands.Context, *, arg: str):
+    async def from_str(self, ctx: commands.Context, arg: str):
         """Search Youtube for a list of music, based on keyword.
 
         Args:
