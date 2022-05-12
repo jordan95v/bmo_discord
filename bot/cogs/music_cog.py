@@ -93,30 +93,43 @@ class MusicCog(commands.Cog):
         message: discord.Embed
         try:
             if arg.startswith("http"):
-                res: Any = self.ytdl.extract_info(arg, download=False)
-                source_url: str = res.get("formats")[0].get("url")
-                title: str = res.get("title")
-                new_url: str = arg
+                source, title = await self.from_url(ctx, arg=arg)
+                url: str = arg
             else:
-                source_url, title, new_url = await self.from_str(ctx, arg=arg)
+                source, title, url = await self.from_str(ctx, arg=arg)
         except youtube_dl.DownloadError:
             message = EmbedCreator.create_embed(
-                name="Error while attemptin to stream the music.",
+                name="Error while attempting to stream the music.",
                 value=f"Error happenned for research with the keywords : {arg}",
             )
+            await ctx.send(embed=message)
         else:
-            if source_url:
-                source: discord.FFmpegOpusAudio = (
-                    await discord.FFmpegOpusAudio.from_probe(source_url)
+            if source:
+                music_source: discord.FFmpegOpusAudio = (
+                    await discord.FFmpegOpusAudio.from_probe(source)
                 )
-                ctx.voice_client.play(source)
-
+                ctx.voice_client.play(music_source)
                 message = EmbedCreator.create_embed(
                     name=f"Music playing.",
-                    value=f"Now playing [{title}]({new_url}), requested by {ctx.author.mention}",
+                    value=f"Now playing [{title}]({url}), requested by {ctx.author.mention}",
                 )
-        finally:
             await ctx.send(embed=message)
+
+    async def queue(self, ctx: commands.Context):
+        ...
+
+    async def from_url(self, ctx: commands.Context, *, arg: str):
+        """Search Youtube for an url.
+
+        Args:
+            arg (str): The url to search.
+
+        Returns:
+            tuple: Contains the title and the source url.
+        """
+
+        res: Any = self.ytdl.extract_info(arg, download=False)
+        return (res.get("formats")[0].get("url"), res.get("title"))
 
     async def from_str(self, ctx: commands.Context, *, arg: str):
         """Search Youtube for a list of music, based on keyword.
