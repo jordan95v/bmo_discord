@@ -45,6 +45,12 @@ class EventCog(commands.Cog):
                 value=f"{ctx.author.mention} ! You need to give me an arguments !",
             )
             await ctx.send(embed=message)
+        elif isinstance(error, commands.errors.MissingPermissions):
+            message = EmbedCreator.create_embed(
+                name=f"Permission error",
+                value=f"{ctx.author.mention} ! You don't have the permission to do that.",
+            )
+            await ctx.send(embed=message)
 
         chan_id: str = os.getenv("LOG_CHANNEL")  # type: ignore
         channel: discord.TextChannel = self.client.get_channel(id=int(chan_id))
