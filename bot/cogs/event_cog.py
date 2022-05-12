@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import os
-from utils.embed_maker import EmbedMaker
+from utils.embed_creator import EmbedCreator
 from utils.help import HELP
 
 
@@ -38,7 +38,7 @@ class EventCog(commands.Cog):
 
         message: discord.Embed
         if isinstance(error, commands.errors.MissingRequiredArgument):
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Arguments missing",
                 value=f"{ctx.author.mention} ! You need to give me an arguments !",
             )
@@ -46,7 +46,7 @@ class EventCog(commands.Cog):
 
         chan_id: str = os.getenv("LOG_CHANNEL")  # type: ignore
         channel: discord.TextChannel = self.client.get_channel(id=int(chan_id))
-        message = EmbedMaker.make_embed(
+        message = EmbedCreator.create_embed(
             name=f"An error occured.",
             value=f"Command made by {ctx.message.author}.\n**Command**: {ctx.message.clean_content}.\n**Error**: {error}",
         )

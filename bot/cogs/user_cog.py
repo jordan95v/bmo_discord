@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from utils.embed_maker import EmbedMaker
+from utils.embed_creator import EmbedCreator
 
 
 class UserCog(commands.Cog):
@@ -19,7 +19,7 @@ class UserCog(commands.Cog):
             ctx (commands.Context): The context.
         """
         date = ctx.message.author.joined_at.strftime("%d %B %Y")
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"How old are you here ?",
             value=f"{ctx.author.mention} is here since **{date}** !",
         )
@@ -42,7 +42,7 @@ class UserCog(commands.Cog):
         old_name: str = member.nick
         try:
             if member is ctx.guild.me:
-                message = EmbedMaker.make_embed(
+                message = EmbedCreator.create_embed(
                     name=f"Permission error.",
                     value=f"You have no permission to change my name !",
                 )
@@ -50,13 +50,13 @@ class UserCog(commands.Cog):
                 return
             await member.edit(nick=nick)
         except discord.errors.Forbidden:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Permission error.",
                 value=f"You have no permission to change **{member.nick}'s** nickname !",
             )
             await ctx.send(embed=message)
         else:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Rename is a success.",
                 value=f"{ctx.author.mention} changed **{old_name}** nickname to **{nick}** !",
             )

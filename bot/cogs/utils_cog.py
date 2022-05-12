@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import random
-from utils.embed_maker import EmbedMaker
+from utils.embed_creator import EmbedCreator
 
 
 class UtilsCog(commands.Cog):
@@ -23,7 +23,7 @@ class UtilsCog(commands.Cog):
         messages = await ctx.channel.history(limit=2).flatten()
         await messages[-1].pin()
         await ctx.channel.purge(limit=1)
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Messages pinned",
             value=f"{ctx.author.mention} pinned a message from {messages[-1].author.mention} !",
         )
@@ -49,7 +49,7 @@ class UtilsCog(commands.Cog):
             number (int): The range.
         """
 
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Rand",
             value=f"{ctx.author.mention} Rand of **{number}**. "
             f"Result: **{random.randint(1, number)}**",
@@ -66,13 +66,13 @@ class UtilsCog(commands.Cog):
         """
 
         try:
-            message: discord.Embed = EmbedMaker.make_embed(
+            message: discord.Embed = EmbedCreator.create_embed(
                 name=f"Choices between : {', '.join(choices)}",
                 value=f"{ctx.author.mention} The **choice** is: "
                 f"**{random.choice(choices)}**",
             )
         except IndexError:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"No arguments",
                 value=f"You need to give arguments so i can choose !",
             )
@@ -93,7 +93,8 @@ class UtilsCog(commands.Cog):
             "I don't think so",
             "I rather not answer that, weirdo",
         ]
-        message: discord.Embed = EmbedMaker.make_embed(
+
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f" Question : {question}",
             value=f"{ctx.author.mention} | **{random.choice(choices)}**.",
         )

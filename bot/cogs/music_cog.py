@@ -6,7 +6,7 @@ from discord.ext import commands
 import discord
 import youtube_dl
 import dotenv
-from utils.embed_maker import EmbedMaker
+from utils.embed_creator import EmbedCreator
 
 ytdl_format_options: dict[str, Any] = {
     "format": "bestaudio",
@@ -44,7 +44,7 @@ class MusicCog(commands.Cog):
         try:
             channel: discord.VoiceChannel = ctx.author.voice.channel
         except AttributeError:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Cannot join !",
                 value="You must be in a vocal channel so i can join !",
             )
@@ -55,7 +55,7 @@ class MusicCog(commands.Cog):
             else:
                 await ctx.voice_client.move_to(channel)
 
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name="Succesfully joined",
                 value=f"Joined channel : **{channel.mention}**",
             )
@@ -71,14 +71,14 @@ class MusicCog(commands.Cog):
 
         message: discord.Embed
         if ctx.voice_client is not None:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name="Succesfully left",
                 value=f"Left the voice channel : {ctx.voice_client.channel.mention}",
             )
             await ctx.voice_client.disconnect()
             await ctx.send(embed=message)
         else:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name="Cannot left if not in a channel.",
                 value="I must be in a voice channel to disconnect.",
             )
@@ -103,7 +103,7 @@ class MusicCog(commands.Cog):
             else:
                 source_url, title, new_url = await self.from_str(ctx, arg=arg)
         except youtube_dl.DownloadError:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name="Error while attemptin to stream the music.",
                 value=f"Error happenned for research with the keywords : {arg}",
             )
@@ -113,7 +113,7 @@ class MusicCog(commands.Cog):
             source = await discord.FFmpegOpusAudio.from_probe(source_url)
             ctx.voice_client.play(source)
 
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Music playing.",
                 value=f"Now playing [{title}]({new_url}), requested by {ctx.author.mention}",
             )
@@ -132,7 +132,7 @@ class MusicCog(commands.Cog):
 
         message: discord.Embed
         res: Any = self.ytdl.extract_info(f"ytsearch5:{arg}", download=False)["entries"]
-        message = EmbedMaker.make_embed(
+        message = EmbedCreator.create_embed(
             name="Make your choices !",
             value=f"\n**:1** - {res[0].get('title')}\n"
             f"**:2** - {res[1].get('title')}\n**:3** - {res[2].get('title')}"
@@ -147,7 +147,7 @@ class MusicCog(commands.Cog):
                 timeout=15.0,
             )
         except asyncio.TimeoutError:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name="Request timed out.",
                 value="Music request timed out, next time choose faster !",
             )
@@ -172,7 +172,7 @@ class MusicCog(commands.Cog):
         """
 
         ctx.voice_client.pause()
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Music paused.",
             value=f"**Paused** the music, requested by {ctx.author.mention} !",
         )
@@ -187,7 +187,7 @@ class MusicCog(commands.Cog):
         """
 
         ctx.voice_client.resume()
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Music resumed.",
             value=f"**Resumed** the music, requested by {ctx.author.mention} !",
         )
@@ -201,7 +201,7 @@ class MusicCog(commands.Cog):
             ctx (commands.Context): The context.
         """
 
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Music stopped.",
             value=f"**Stopped** the music ! And left {ctx.voice_client.channel.mention}, "
             f"requested by {ctx.author.mention}",
@@ -221,7 +221,7 @@ class MusicCog(commands.Cog):
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                message: discord.Embed = EmbedMaker.make_embed(
+                message: discord.Embed = EmbedCreator.create_embed(
                     name=f"You must connect to a voice channel.",
                     value="You are not connected to a voice channel.",
                 )

@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import dotenv
-from utils.embed_maker import EmbedMaker
+from utils.embed_creator import EmbedCreator
 
 
 class AdminCog(commands.Cog):
@@ -25,7 +25,7 @@ class AdminCog(commands.Cog):
 
         message: discord.Embed
         if number > 50:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Error for delete",
                 value=f"You cannot delete that number of messages, limit is 50.",
             )
@@ -33,7 +33,7 @@ class AdminCog(commands.Cog):
             return
 
         messages = await ctx.channel.purge(limit=number + 1)
-        message = EmbedMaker.make_embed(
+        message = EmbedCreator.create_embed(
             name=f"Delete",
             value=f"Deleted **{len(messages)- 1}** message{'s' if len(messages) > 2 else ''} !",
         )
@@ -52,7 +52,7 @@ class AdminCog(commands.Cog):
             reason (str): The reason of the kick.
         """
 
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Kick",
             value=f"{member.mention} have been kicked by {ctx.author.mention}, reason : **{reason}**",
         )
@@ -72,7 +72,7 @@ class AdminCog(commands.Cog):
             reason (str): The reason of the ban.
         """
 
-        message: discord.Embed = EmbedMaker.make_embed(
+        message: discord.Embed = EmbedCreator.create_embed(
             name=f"Ban",
             value=f"{member.mention} have been banned by {ctx.author.mention}, reason : **{reason}**",
         )
@@ -95,7 +95,7 @@ class AdminCog(commands.Cog):
 
             user_name, user_discriminator = member.split("#")
         except ValueError:
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Ban",
                 value=f"Make sure you spelled the nam ecorrectly -> xxx#1234",
             )
@@ -109,14 +109,14 @@ class AdminCog(commands.Cog):
                     user_discriminator,
                 ):
                     await ctx.guild.unban(user)
-                    message = EmbedMaker.make_embed(
+                    message = EmbedCreator.create_embed(
                         name=f"Ban",
                         value=f"{ctx.author.mention} unbanned {user.mention}.",
                     )
                     await ctx.send(embed=message)
                     return
 
-            message = EmbedMaker.make_embed(
+            message = EmbedCreator.create_embed(
                 name=f"Ban",
                 value=f"{member} cannot be unbanned.",
             )
