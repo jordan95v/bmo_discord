@@ -54,10 +54,10 @@ class UserCog(commands.Cog):
                 name=f"Permission error.",
                 value=f"You have no permission to change **{member.nick}'s** nickname !",
             )
-            await ctx.send(embed=message)
         else:
             message = EmbedCreator.create_embed(
                 name=f"Rename is a success.",
                 value=f"{ctx.author.mention} changed **{old_name}** nickname to **{nick}** !",
             )
+        finally:
             await ctx.send(embed=message)

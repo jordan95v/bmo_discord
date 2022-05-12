@@ -97,9 +97,8 @@ class AdminCog(commands.Cog):
         except ValueError:
             message = EmbedCreator.create_embed(
                 name=f"Ban",
-                value=f"Make sure you spelled the nam ecorrectly -> xxx#1234",
+                value=f"Make sure you spelled the name correctly -> XXX#1234",
             )
-            await ctx.send(embed=message)
         else:
             for ban_entry in banned_users:
                 user: discord.Member = ban_entry.user
@@ -110,7 +109,7 @@ class AdminCog(commands.Cog):
                 ):
                     await ctx.guild.unban(user)
                     message = EmbedCreator.create_embed(
-                        name=f"Ban",
+                        name=f"Unban",
                         value=f"{ctx.author.mention} unbanned {user.mention}.",
                     )
                     await ctx.send(embed=message)
@@ -120,4 +119,5 @@ class AdminCog(commands.Cog):
                 name=f"Ban",
                 value=f"{member} cannot be unbanned.",
             )
+        finally:
             await ctx.send(embed=message)

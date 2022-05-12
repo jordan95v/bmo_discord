@@ -48,7 +48,8 @@ class EventCog(commands.Cog):
         channel: discord.TextChannel = self.client.get_channel(id=int(chan_id))
         message = EmbedCreator.create_embed(
             name=f"An error occured.",
-            value=f"Command made by {ctx.message.author}.\n**Command**: {ctx.message.clean_content}.\n**Error**: {error}",
+            value=f"Command made by {ctx.message.author}.\n**Command**: "
+            f"{ctx.message.clean_content}.\n**Error**: {error}",
         )
         await channel.send(embed=message)
 

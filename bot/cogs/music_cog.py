@@ -28,7 +28,6 @@ class MusicCog(commands.Cog):
 
         self.client: commands.Bot = client
         self.ytdl: youtube_dl.YoutubeDL = youtube_dl.YoutubeDL(ytdl_format_options)
-        self.executable: Path = WORKDIR / "ffmpeg.exe"
 
         dotenv.load_dotenv()
 
@@ -48,17 +47,16 @@ class MusicCog(commands.Cog):
                 name=f"Cannot join !",
                 value="You must be in a vocal channel so i can join !",
             )
-            await ctx.send(embed=message)
         else:
             if ctx.voice_client is None:
                 await channel.connect()
             else:
                 await ctx.voice_client.move_to(channel)
-
             message = EmbedCreator.create_embed(
                 name="Succesfully joined",
                 value=f"Joined channel : **{channel.mention}**",
             )
+        finally:
             await ctx.send(embed=message)
 
     @commands.command(name="leave")
@@ -76,13 +74,12 @@ class MusicCog(commands.Cog):
                 value=f"Left the voice channel : {ctx.voice_client.channel.mention}",
             )
             await ctx.voice_client.disconnect()
-            await ctx.send(embed=message)
         else:
             message = EmbedCreator.create_embed(
                 name="Cannot left if not in a channel.",
                 value="I must be in a voice channel to disconnect.",
             )
-            await ctx.send(embed=message)
+        await ctx.send(embed=message)
 
     @commands.command(name="play")
     async def play(self, ctx: commands.Context, *, arg: str) -> None:
@@ -107,16 +104,16 @@ class MusicCog(commands.Cog):
                 name="Error while attemptin to stream the music.",
                 value=f"Error happenned for research with the keywords : {arg}",
             )
-            await ctx.send(embed=message)
+        else:
+            if source_url:
+                source = await discord.FFmpegOpusAudio.from_probe(source_url)
+                ctx.voice_client.play(source)
 
-        if source_url:
-            source = await discord.FFmpegOpusAudio.from_probe(source_url)
-            ctx.voice_client.play(source)
-
-            message = EmbedCreator.create_embed(
-                name=f"Music playing.",
-                value=f"Now playing [{title}]({new_url}), requested by {ctx.author.mention}",
-            )
+                message = EmbedCreator.create_embed(
+                    name=f"Music playing.",
+                    value=f"Now playing [{title}]({new_url}), requested by {ctx.author.mention}",
+                )
+        finally:
             await ctx.send(embed=message)
 
     async def from_str(self, ctx: commands.Context, *, arg: str):
@@ -155,7 +152,6 @@ class MusicCog(commands.Cog):
             return ("", "", "")  # Only so it don't raise an TypeError.
         else:
             await ctx.channel.purge(limit=1)
-
             ret: dict[str, Any] = res[int(msg.content[1:]) - 1]
             return (
                 ret.get("formats")[0].get("url"),  # type: ignore
