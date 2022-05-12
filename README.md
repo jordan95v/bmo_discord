@@ -21,9 +21,9 @@ $ ./venv/bin/activate      # .\venv\Scripts\activate on windows
 Create a `.env` file and insert your environment variables as follow:
 Be sure to create an app in the discord developer portal before.
 
-```
-TOKEN=...
-LOG_CHANNEL=...
+```python
+TOKEN=... #Token of your bot.
+LOG_CHANNEL=... #ID of your log channel, so you can have error feedback 🤩
 ```
 Then just launch `bot/main.py`, and your bot is ready.
 You can also makes it run on Heroku, etc ...
