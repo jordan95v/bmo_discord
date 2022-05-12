@@ -87,36 +87,46 @@ class MusicCog(commands.Cog):
 
         Args:
             ctx (commands.Context): The context.
-            arg (str): The URL of the music.
+            arg (str): The URL | keyword of the music.
         """
 
         message: discord.Embed
+        ret: dict[str, str] = await self.download_source(ctx, arg)
+        source: str = ret.get("source", "")
+        title: str = ret.get("title", "")
+        url: str = ret.get("url", arg)
+
+        if source:
+            music_source: discord.FFmpegOpusAudio = (
+                await discord.FFmpegOpusAudio.from_probe(source)
+            )
+            ctx.voice_client.play(music_source)
+            message = EmbedCreator.create_embed(
+                name=f"Music playing.",
+                value=f"Now playing [{title}]({url}), requested by {ctx.author.mention}",
+            )
+        await ctx.send(embed=message)
+
+    async def download_source(self, ctx: commands.Context, arg):
+        """Download music from either a url or keyword.
+
+        Args:
+            ctx (commands.Context): The context.
+            arg (str): The URL | keyword of the music.
+        """
         try:
             if arg.startswith("http"):
-                source, title = await self.from_url(ctx, arg=arg)
-                url: str = arg
+                return await self.from_url(ctx, arg=arg)
             else:
-                source, title, url = await self.from_str(ctx, arg=arg)
+                return await self.from_str(ctx, arg=arg)
+
         except youtube_dl.DownloadError:
             message = EmbedCreator.create_embed(
                 name="Error while attempting to stream the music.",
                 value=f"Error happenned for research with the keywords : {arg}",
             )
             await ctx.send(embed=message)
-        else:
-            if source:
-                music_source: discord.FFmpegOpusAudio = (
-                    await discord.FFmpegOpusAudio.from_probe(source)
-                )
-                ctx.voice_client.play(music_source)
-                message = EmbedCreator.create_embed(
-                    name=f"Music playing.",
-                    value=f"Now playing [{title}]({url}), requested by {ctx.author.mention}",
-                )
-            await ctx.send(embed=message)
-
-    async def queue(self, ctx: commands.Context):
-        ...
+            return dict()
 
     async def from_url(self, ctx: commands.Context, *, arg: str):
         """Search Youtube for an url.
@@ -129,7 +139,7 @@ class MusicCog(commands.Cog):
         """
 
         res: Any = self.ytdl.extract_info(arg, download=False)
-        return (res.get("formats")[0].get("url"), res.get("title"))
+        return dict(source=res.get("formats")[0].get("url"), title=res.get("title"))
 
     async def from_str(self, ctx: commands.Context, *, arg: str):
         """Search Youtube for a list of music, based on keyword.
@@ -164,14 +174,14 @@ class MusicCog(commands.Cog):
                 value="Music request timed out, next time choose faster !",
             )
             await ctx.send(embed=message)
-            return ("", "", "")  # Only so it don't raise an TypeError.
+            return dict()
         else:
             await ctx.channel.purge(limit=1)
             ret: dict[str, Any] = res[int(msg.content[1:]) - 1]
-            return (
-                ret.get("formats")[0].get("url"),  # type: ignore
-                ret.get("title"),
-                ret.get("webpage_url"),
+            return dict(
+                source=ret.get("formats")[0].get("url"),  # type: ignore
+                title=ret.get("title"),
+                url=ret.get("webpage_url"),
             )
 
     @commands.command(name="pause")
